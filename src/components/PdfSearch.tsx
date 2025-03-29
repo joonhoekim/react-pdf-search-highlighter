@@ -2,12 +2,6 @@ import { useState, useCallback, type FC, type FormEvent } from "react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { IHighlight, NewHighlight, ScaledPosition } from "../types";
 
-interface PdfSearchProps {
-    pdfDocument: PDFDocumentProxy | null;
-    addHighlights: (highlights: Array<IHighlight>) => void;
-    scrollToHighlight: (highlight: IHighlight) => void;
-}
-
 export const usePdfSearch = () => {
     const [searchHighlightIds, setSearchHighlightIds] = useState<Set<string>>(new Set());
 
@@ -52,7 +46,7 @@ export const usePdfSearch = () => {
                 const textContent = await page.getTextContent();
 
                 // Get the viewport with default scale 1.0
-                const viewport = page.getViewport({ scale: 1.0 });
+                // const viewport = page.getViewport({ scale: 1.0 });
 
                 // Process text content to find matches
                 for (const item of textContent.items) {
@@ -272,4 +266,4 @@ export const PdfSearchInput: FC<{
             </form>
         </div>
     );
-}; 
+};
