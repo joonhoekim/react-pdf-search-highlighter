@@ -17,12 +17,17 @@ export function AreaHighlight({
 }: Props) {
   return (
     <div
-      className={`${styles.areaHighlight} ${
-        isScrolledTo ? styles.scrolledTo : ""
-      }`}
+      className={`${styles.areaHighlight} ${isScrolledTo ? styles.scrolledTo : ""
+        }`}
+      style={{
+        backgroundColor: highlight.comment.color || "rgba(252, 232, 151, 1.0)"
+      }}
     >
       <Rnd
         className={styles.part}
+        style={{
+          background: highlight.comment.color || "rgba(255, 226, 143, 1)"
+        }}
         onDragStop={(_, data) => {
           const boundingRect: LTWHP = {
             ...highlight.position.boundingRect,

@@ -12,6 +12,7 @@ interface Props {
   comment: {
     emoji: string;
     text: string;
+    color?: string;
   };
   isScrolledTo: boolean;
 }
@@ -49,7 +50,10 @@ export function Highlight({
             onClick={onClick}
             // biome-ignore lint/suspicious/noArrayIndexKey: We can use position hash at some point in future
             key={index}
-            style={rect}
+            style={{
+              ...rect,
+              background: comment.color || "rgba(255, 226, 143, 1)"
+            }}
             className={`Highlight__part ${styles.part}`}
           />
         ))}

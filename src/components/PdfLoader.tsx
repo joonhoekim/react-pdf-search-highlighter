@@ -13,6 +13,7 @@ interface Props {
   onError?: (error: Error) => void;
   cMapUrl?: string;
   cMapPacked?: boolean;
+  onPdfDocumentLoaded?: (pdfDocument: PDFDocumentProxy) => PDFDocumentProxy;
 }
 
 interface State {
@@ -85,6 +86,9 @@ export class PdfLoader extends Component<Props, State> {
 
         return getDocument(document).promise.then((pdfDocument) => {
           this.setState({ pdfDocument });
+          if (this.props.onPdfDocumentLoaded) {
+            this.props.onPdfDocumentLoaded(pdfDocument);
+          }
         });
       })
       .catch((e) => this.componentDidCatch(e));
