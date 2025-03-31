@@ -92,8 +92,8 @@ export const usePdfSearch = () => {
                         const fontSize = Math.abs(b || d || 12);
 
                         // Create the rectangle for highlighting
-                        const x1 = e + matchStart - (charWidth * 0.3);
-                        const x2 = e + matchStart + matchWidth + (charWidth * 0.1);
+                        const x1 = e + matchStart - (charWidth * 0.5);
+                        const x2 = e + matchStart + matchWidth + (charWidth * 1);
                         const y1 = f - (fontSize * 0.2);
                         const y2 = f + (fontSize * 0.8);
 
