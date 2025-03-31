@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { IHighlight } from "./react-pdf-highlighter";
-import { PdfSearchInput } from "./react-pdf-highlighter";
+import { PdfSearchInput, HighlightActions } from "./react-pdf-highlighter";
 import { PdfUploader } from "./PdfUploader";
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
   currentPdfName?: string;
   onChangePdf?: (url: string) => void;
   availablePdfs?: { url: string, name: string }[];
+  importHighlights?: (highlights: Array<IHighlight>) => void;
 }
 
 type TabType = 'tools' | 'highlights';
@@ -35,6 +36,7 @@ export function Sidebar({
   currentPdfName,
   onChangePdf,
   availablePdfs,
+  importHighlights,
 }: Props) {
   const [activeTab, setActiveTab] = useState<TabType>('tools');
 
@@ -144,6 +146,20 @@ export function Sidebar({
               />
             </div>
 
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h3>하이라이트 내보내기/가져오기</h3>
+              {importHighlights && (
+                <HighlightActions
+                  highlights={highlights}
+                  documentName={currentPdfName}
+                  onImport={importHighlights}
+                  exportButtonText="하이라이트 내보내기"
+                  importButtonText="하이라이트 가져오기"
+                  containerStyle={{ marginTop: "0.5rem" }}
+                />
+              )}
+            </div>
+
             <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
               <button
                 type="button"
@@ -181,81 +197,95 @@ export function Sidebar({
         )}
 
         {activeTab === 'highlights' && (
-          <ul className="sidebar__highlights" style={{
-            listStyleType: "none",
-            padding: 0,
-            margin: 0
-          }}>
-            {highlights.length === 0 ? (
-              <div style={{
-                padding: "1rem",
-                textAlign: "center",
-                color: "#666"
-              }}>
-                하이라이트가 없습니다.
-              </div>
-            ) : (
-              highlights.map((highlight, index) => (
-                <li
-                  key={highlight.id || index}
-                  className="sidebar__highlight"
-                  onClick={() => {
-                    updateHash(highlight);
-                  }}
-                  style={{
-                    padding: "0.75rem",
-                    marginBottom: "0.75rem",
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    backgroundColor: "#fff",
-                    cursor: "pointer",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
-                  }}
-                >
-                  <div>
-                    <strong style={{
-                      display: "block",
-                      marginBottom: "0.5rem",
-                      color: highlight.comment.color || "#000"
-                    }}>
-                      {highlight.comment.emoji} {highlight.comment.text}
-                    </strong>
-                    {highlight.content.text ? (
-                      <blockquote style={{
-                        margin: "0.5rem 0",
-                        padding: "0.5rem",
-                        borderLeft: "3px solid #ddd",
-                        fontSize: "0.9rem",
-                        color: "#555"
-                      }}>
-                        {`${highlight.content.text.slice(0, 90).trim()}…`}
-                      </blockquote>
-                    ) : null}
-                    {highlight.content.image ? (
-                      <div
-                        className="highlight__image"
-                        style={{ marginTop: "0.5rem" }}
-                      >
-                        <img
-                          src={highlight.content.image}
-                          alt={"Screenshot"}
-                          style={{ maxWidth: "100%", borderRadius: "4px" }}
-                        />
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="highlight__location" style={{
-                    marginTop: "0.5rem",
-                    fontSize: "0.8rem",
-                    color: "#777",
-                    textAlign: "right"
-                  }}>
-                    Page {highlight.position.pageNumber}
-                  </div>
-                </li>
-              ))
+          <>
+            {/* Export/Import buttons in highlights tab */}
+            {highlights.length > 0 && importHighlights && (
+              <HighlightActions
+                highlights={highlights}
+                documentName={currentPdfName}
+                onImport={importHighlights}
+                exportButtonText="내보내기"
+                importButtonText="가져오기"
+                containerStyle={{ marginBottom: "1rem" }}
+              />
             )}
-          </ul>
+
+            <ul className="sidebar__highlights" style={{
+              listStyleType: "none",
+              padding: 0,
+              margin: 0
+            }}>
+              {highlights.length === 0 ? (
+                <div style={{
+                  padding: "1rem",
+                  textAlign: "center",
+                  color: "#666"
+                }}>
+                  하이라이트가 없습니다.
+                </div>
+              ) : (
+                highlights.map((highlight, index) => (
+                  <li
+                    key={highlight.id || index}
+                    className="sidebar__highlight"
+                    onClick={() => {
+                      updateHash(highlight);
+                    }}
+                    style={{
+                      padding: "0.75rem",
+                      marginBottom: "0.75rem",
+                      border: "1px solid #ddd",
+                      borderRadius: "4px",
+                      backgroundColor: "#fff",
+                      cursor: "pointer",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                    }}
+                  >
+                    <div>
+                      <strong style={{
+                        display: "block",
+                        marginBottom: "0.5rem",
+                        color: highlight.comment.color || "#000"
+                      }}>
+                        {highlight.comment.emoji} {highlight.comment.text}
+                      </strong>
+                      {highlight.content.text ? (
+                        <blockquote style={{
+                          margin: "0.5rem 0",
+                          padding: "0.5rem",
+                          borderLeft: "3px solid #ddd",
+                          fontSize: "0.9rem",
+                          color: "#555"
+                        }}>
+                          {`${highlight.content.text.slice(0, 90).trim()}…`}
+                        </blockquote>
+                      ) : null}
+                      {highlight.content.image ? (
+                        <div
+                          className="highlight__image"
+                          style={{ marginTop: "0.5rem" }}
+                        >
+                          <img
+                            src={highlight.content.image}
+                            alt={"Screenshot"}
+                            style={{ maxWidth: "100%", borderRadius: "4px" }}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="highlight__location" style={{
+                      marginTop: "0.5rem",
+                      fontSize: "0.8rem",
+                      color: "#777",
+                      textAlign: "right"
+                    }}>
+                      Page {highlight.position.pageNumber}
+                    </div>
+                  </li>
+                ))
+              )}
+            </ul>
+          </>
         )}
       </div>
     </div>

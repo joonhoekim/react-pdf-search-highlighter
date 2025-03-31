@@ -226,6 +226,34 @@ export function App() {
     );
   };
 
+  // 하이라이트 가져오기 함수
+  const importHighlights = (importedHighlights: Array<IHighlight>) => {
+    // 가져온 하이라이트에 ID가 없는 경우 ID 생성
+    const processedHighlights = importedHighlights.map(highlight => {
+      if (!highlight.id) {
+        return { ...highlight, id: getNextId() };
+      }
+      return highlight;
+    });
+
+    // 중복을 방지하기 위해 ID 기준으로 기존 하이라이트와 병합
+    const existingIds = new Set(highlights.map(h => h.id));
+    const newHighlights = [
+      ...highlights,
+      ...processedHighlights.filter(h => !existingIds.has(h.id))
+    ];
+
+    setHighlights(newHighlights);
+
+    // 현재 PDF에 대한 하이라이트 저장
+    setHighlightsPerPdf(prev => ({
+      ...prev,
+      [url]: newHighlights
+    }));
+
+    alert(`${processedHighlights.length}개의 하이라이트를 가져왔습니다.`);
+  };
+
   return (
     <div className="App" style={{ display: "flex", height: "100vh" }}>
       <Sidebar
@@ -255,6 +283,7 @@ export function App() {
             name: `Uploaded PDF ${index + 1}`
           }))
         ]}
+        importHighlights={importHighlights}
       />
       <div
         style={{
